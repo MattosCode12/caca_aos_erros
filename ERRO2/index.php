@@ -28,7 +28,15 @@ if (isset($_POST['cadastrar'])) {
 
     $stmt = $conn->prepare($sql);
 
-    $stmt->bind_param("ssdi", $nome, $categoria, $preco, $estoque);
+    if ($stmt) {
+
+        $stmt->bind_param(
+            "ssdi",
+            $nome,
+            $categoria,
+            $preco,
+            $estoque
+        );
 
     $stmt->execute();
 
@@ -48,6 +56,8 @@ if (isset($_GET['excluir'])) {
     $sql = "DELETE FROM produtos WHERE id = ?";
 
     $stmt = $conn->prepare($sql);
+
+    if ($stmt) {
 
     $stmt->bind_param("i", $id);
 
@@ -76,6 +86,8 @@ if (isset($_POST['atualizar'])) {
             WHERE id = ?";
 
     $stmt = $conn->prepare($sql);
+
+    if ($stmt) {
 
     $stmt->bind_param(
         "ssdii",
@@ -199,28 +211,60 @@ $resultado = $conn->query($sql);
 
                 <td>
                     <?= $produto['id'] ?>
+
                 </td>
 
-                <td>
-                    <?= $produto['nome'] ?>
-                </td>
 
                 <td>
-                    <?= $produto['categoria'] ?>
+
+                    <?= htmlspecialchars($produto['nome']) ?>
+
                 </td>
 
-                <td>
-                    R$ <?= number_format($produto['preco'], 2, ',', '.') ?>
-                </td>
 
                 <td>
+
+                    <?= htmlspecialchars($produto['categoria']) ?>
+
+                </td>
+
+
+                <td>
+
+                    R$ <?= number_format(
+                        $produto['preco'],
+                        2,
+                        ',',
+                        '.'
+                    ) ?>
+
+                </td>
+
+
+                <td>
+
                     <?= $produto['estoque'] ?>
+
                 </td>
+
 
                 <td>
 
-                    <a href="?excluir=<?= $produto['id'] ?>">
+                    <a href="editar.php?id=<?= $produto['id'] ?>">
+
+                        Editar
+
+                    </a>
+
+                    |
+
+                    <a
+                        href="?excluir=<?= $produto['id'] ?>"
+                        onclick="return confirm('Tem certeza que deseja excluir este produto?')"
+                    >
+
                         Excluir
+
                     </a>
 
                 </td>
