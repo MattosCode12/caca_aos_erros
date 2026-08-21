@@ -31,6 +31,13 @@ if (isset($_POST['cadastrar'])) {
 // EXCLUIR
 if (isset($_GET['excluir'])) {
 
+<a 
+    href="index.php?excluir=<?= $usuario['id'] ?>"
+    onclick="return confirm('Deseja realmente excluir este usuário?')"
+>
+    Excluir
+</a>
+
     $id = $_GET['excluir'];
 
     $sql = "DELETE FROM usuarios WHERE id = ?";
@@ -51,14 +58,30 @@ if (isset($_POST['editar'])) {
     $nome = $_POST['nome'];
     $email = $_POST['email'];
 
+    <input type="hidden" name="id" value="<?= $usuarioEditar['id'] ?>">
     $sql = "UPDATE usuarios SET nome = ?, email = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
 
-    $stmt->bind_param("ssi", $nome, $email, $id);
-    $stmt->execute();
+if (!$stmt) {
+    die("Erro na consulta: " . $conn->error);
+}
+
+    $stmt->bind_param("ss", $nome, $email);
+    if ($stmt->execute()) {
+    echo "Usuário cadastrado com sucesso!";
+} else {
+    echo "Erro: " . $stmt->error;
+}
 
     header("Location: index.php");
     exit;
+
+    <td>
+    <a href="index.php?editar=<?= $usuario['id'] ?>">
+        Editar
+    </a>
+</td>
+
 }
 
 
@@ -118,11 +141,11 @@ $resultado = $conn->query($sql);
                 </td>
 
                 <td>
-                    <?= $usuario['nome'] ?>
+                    <?= htmlspecialchars($usuario['nome']) ?>
                 </td>
 
                 <td>
-                    <?= $usuario['email'] ?>
+                    <?= htmlspecialchars($usuario['email']) ?>
                 </td>
 
                 <td>
